@@ -24,7 +24,8 @@ public class BookSorter {
 		job.setJarByClass(BookSorter.class);
 
 		Scan scan = new Scan();
-		scan.addFamily("bookName-price".getBytes());
+		//scan.addFamily("bookName-price".getBytes());
+		scan.addColumn("bookName-price".getBytes(), "price".getBytes());
 
 		TableMapReduceUtil.initTableMapperJob("BookPrice", // 数据库表名
 				scan, // Scan实例，控制列族及属性的选择

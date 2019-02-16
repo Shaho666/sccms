@@ -10,20 +10,27 @@ import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
 
 public class BookPriceReducer extends TableReducer<FloatWritable, Text, ImmutableBytesWritable> {
-	
-	private byte[] rowkey;
+
 	private String columnPrice;
+
+	private enum Counters {
+		ROWS, COLS, VALID, ERROR
+	}
 
 	@Override
 	public void reduce(FloatWritable key, Iterable<Text> values, Context context)
 			throws IOException, InterruptedException {
+
+		context.getCounter(Counters.VALID).increment(1);
 		for (Text val : values) {
-			rowkey = val.getBytes();
+			byte[] rowkey = val.getBytes();
 			columnPrice = key.toString();
 			Put put = new Put(rowkey);// 以书名为键值，创建Put对象
-			put.addColumn(Bytes.toBytes("sort"), Bytes.toBytes("price"), Bytes.toBytes(columnPrice));
+			put.addColumn(Bytes.toBytes("bookName-price"), Bytes.toBytes("price"),
+					Bytes.toBytes(context.getCounter(Counters.VALID).getValue()));
 			// 以sort为簇列，price为列名，以columnprice为价格
-			context.write(null, put);
+			context.write(new ImmutableBytesWritable(Bytes.toBytes(columnPrice)), put);
+
 		}
 	}
 

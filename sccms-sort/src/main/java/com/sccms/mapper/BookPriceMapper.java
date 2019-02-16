@@ -18,7 +18,7 @@ public class BookPriceMapper extends TableMapper<FloatWritable, Text> {
 			throws InterruptedException, IOException {
 		
 		Text bookName = null;
-		FloatWritable price = new FloatWritable();
+		FloatWritable price = null;
 		byte[] byteName = null;
 		byte[] bytePrice = null;
 
@@ -26,9 +26,9 @@ public class BookPriceMapper extends TableMapper<FloatWritable, Text> {
 			byteName = CellUtil.cloneRow(cell);
 			bytePrice = CellUtil.cloneValue(cell);
 			bookName = new Text(Bytes.toString(byteName));
-			price = new FloatWritable(Bytes.toFloat(bytePrice));
+			price = new FloatWritable(Float.valueOf(Bytes.toString(bytePrice)));
 			context.write(price, bookName);
-			System.out.println("书名：" + bookName + " 价格：" + price);
+			//System.out.println("书名：" + bookName + " 价格：" + price);
 
 		}
 
